@@ -8,7 +8,6 @@
 #include <headers/TaskBox.h>
 #include <headers/TaskChoque.h>
 
-
 #include <headers/globals.h>
 #include <Arduino.h>
 #include <Arduino_FreeRTOS.h>
@@ -71,8 +70,8 @@ void setup()
     xTaskCreate(taskLateral, "Lateral", 256, NULL, 2, &handleLateral);
 
     // Configurar interrupciones (después de verificar recursos)
-    attachInterrupt(digitalPinToInterrupt(pinSensorChoque), interruptChoque, RISING);
-    attachInterrupt(digitalPinToInterrupt(pinToggleABS), interruptToggleABS, RISING);
+    attachInterrupt(digitalPinToInterrupt(pinSensorChoque), interruptChoque, FALLING);
+    attachInterrupt(digitalPinToInterrupt(pinToggleABS), interruptToggleABS, FALLING);
 
     // Iniciar el scheduler
     vTaskStartScheduler();
