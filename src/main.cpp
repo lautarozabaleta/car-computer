@@ -27,8 +27,8 @@ void setup()
     pinVolante = A2;
 
     // Botones
-    pinSensorChoque = 2;
-    pinToggleABS = 3;
+    pinSensorChoque = 20;
+    pinToggleABS = 21;
 
     // Colores led
     pinRojo = 10;
@@ -62,12 +62,12 @@ void setup()
     }
 
     // Crear tareas
-    xTaskCreate(taskLogger, "Logger", 768, NULL, 2, &handleLogger);
-    xTaskCreate(taskBox, "Box", 512, NULL, 1, &handleBox);
+    xTaskCreate(taskLogger, "Logger", 768, NULL, 3, &handleLogger);
+    xTaskCreate(taskBox, "Box", 512, NULL, 3, &handleBox);
     xTaskCreate(taskChoque, "Choque", 256, NULL, 3, &handleChoque);
     xTaskCreate(taskStatus, "Status", 256, NULL, 3, &handleStatus);
-    xTaskCreate(taskABS, "ABS", 256, NULL, 2, &handleAbs);
-    xTaskCreate(taskLateral, "Lateral", 256, NULL, 2, &handleLateral);
+    xTaskCreate(taskABS, "ABS", 256, NULL, 3, &handleAbs);
+    xTaskCreate(taskLateral, "Lateral", 256, NULL, 3, &handleLateral);
 
     // Configurar interrupciones (después de verificar recursos)
     attachInterrupt(digitalPinToInterrupt(pinSensorChoque), interruptChoque, FALLING);

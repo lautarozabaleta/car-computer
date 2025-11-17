@@ -14,7 +14,9 @@ void taskChoque(void *parameter)
             crashed = true;
 
             // Enviar mensaje de log
-            enviar_log("CHOQUE DETECTADO");
+            LogMessage msg;
+            snprintf(msg.message, sizeof(msg.message), "CHOQUE DETECTADO");
+            enviar_log(msg.message);
         }
     }
 }

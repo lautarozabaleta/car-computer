@@ -16,6 +16,9 @@ float calcSpeed()
     if (speed < 0)
         speed = 0.0f;
     previousSpeed = speed;
+    currentSpeed = speed;
+    appliedThrottlePercentage = throttlePercentage;
+    effectiveBrakePercentage = effectiveBrakeForce / maxBrakeForce;
     return speed;
 }
 
@@ -39,13 +42,19 @@ void taskLateral(void *parameter)
 
         if (lateralAcceleration > lateralAccelerationThreshold)
         {
-            enviar_log("Alerta de riesgo lateral: %.2f m/s²", lateralAcceleration);
+            LogMessage msg;
+            char accelStr[10];
+            dtostrf(lateralAcceleration, 6, 2, accelStr);
+            snprintf(msg.message, sizeof(msg.message), "Alerta de riesgo lateral: %s m/s2", accelStr);
+            enviar_log(msg.message);
         }
 
         if (lateralAcceleration > lateralAccelerationThreshold * 1.5f)
         {
             crashed = true;
-            enviar_log("COLISION LATERAL");
+            LogMessage msg;
+            snprintf(msg.message, sizeof(msg.message), "COLISION LATERAL");
+            enviar_log(msg.message);
         }
 
         vTaskDelay(pdMS_TO_TICKS(10));

@@ -8,10 +8,22 @@ void taskBox(void *parameter)
 {
     for (;;)
     {
-        enviar_log("Estado - Vel: %.2f m/s | Acel: %.1f%% | Freno: %.1f%%",
-                   currentSpeed,
-                   appliedThrottlePercentage * 100.0f,
-                   effectiveBrakePercentage * 100.0f);
+        LogMessage msg;
+
+        // Convertir floats a strings
+        char speedStr[10];
+        char accelStr[10];
+        char brakeStr[10];
+
+        dtostrf(currentSpeed, 6, 2, speedStr);
+        dtostrf(appliedThrottlePercentage * 100.0, 5, 1, accelStr);
+        dtostrf(effectiveBrakePercentage * 100.0, 5, 1, brakeStr);
+
+        snprintf(msg.message, sizeof(msg.message),
+                 "Estado - Vel: %s m/s | Acelerador: %s%% | Freno: %s%%",
+                 speedStr, accelStr, brakeStr);
+
+        enviar_log(msg.message);
 
         vTaskDelay(pdMS_TO_TICKS(350));
     }

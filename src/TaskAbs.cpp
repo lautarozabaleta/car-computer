@@ -6,8 +6,19 @@ void calcAbs(float brakePercentage)
 {
     float absForce = absLowerThreshold * pow((brakePercentage - absUpperThreshold) / (absUpperThreshold - absLowerThreshold), 2) * maxBrakeForce;
     effectiveBrakeForce = absForce;
-    enviar_log("ABS activado: Fuerza de frenado efectiva = %.2f N", effectiveBrakeForce);
+
+    // Evitar loguear siempre
+    int log = rand() % 10;
+    if (log == 0)
+    {
+        LogMessage msg;
+        char forceStr[10];
+        dtostrf(effectiveBrakeForce, 6, 2, forceStr); // 6 ancho total, 2 decimales
+        snprintf(msg.message, sizeof(msg.message), "ABS activado: Fuerza = %s N", forceStr);
+        enviar_log(msg.message);
+    }
 }
+
 // ============== TAREA ABS ==============
 void taskABS(void *parameter)
 {
@@ -20,7 +31,9 @@ void taskABS(void *parameter)
             absActivated = !absActivated;
 
             // Enviar mensaje de log
-            enviar_log("ABS %s", absActivated ? "ACTIVADO" : "DESACTIVADO");
+            LogMessage msg;
+            snprintf(msg.message, sizeof(msg.message), "ABS %s", absActivated ? "ACTIVADO" : "DESACTIVADO");
+            enviar_log(msg.message);
         }
 
         // Continuar con la lógica normal de ABS si está activado
