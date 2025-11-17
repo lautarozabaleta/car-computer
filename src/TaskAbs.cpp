@@ -1,17 +1,16 @@
 #include "headers/TaskAbs.h"
 #include <headers/globals.h>
+#include <headers/TaskLogger.h>
+
 void calcAbs(float brakePercentage)
 {
     float absForce = absLowerThreshold * pow((brakePercentage - absUpperThreshold) / (absUpperThreshold - absLowerThreshold), 2) * maxBrakeForce;
     effectiveBrakeForce = absForce;
-    LogMessage msg;
-    snprintf(msg.message, sizeof(msg.message), "ABS activado: Fuerza de frenado efectiva = %.2f N", effectiveBrakeForce);
-    xQueueSend(logQueue, &msg, pdMS_TO_TICKS(100));
+    enviar_log("ABS activado: Fuerza de frenado efectiva = %.2f N", effectiveBrakeForce);
 }
+// ============== TAREA ABS ==============
 void taskABS(void *parameter)
 {
-    LogMessage msg;
-
     for (;;)
     {
         // Bloquearse esperando el semáforo del evento toggle ABS
@@ -21,9 +20,7 @@ void taskABS(void *parameter)
             absActivated = !absActivated;
 
             // Enviar mensaje de log
-            snprintf(msg.message, sizeof(msg.message),
-                     "ABS %s", absActivated ? "ACTIVADO" : "DESACTIVADO");
-            xQueueSend(logQueue, &msg, pdMS_TO_TICKS(100));
+            enviar_log("ABS %s", absActivated ? "ACTIVADO" : "DESACTIVADO");
         }
 
         // Continuar con la lógica normal de ABS si está activado
