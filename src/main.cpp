@@ -6,6 +6,7 @@
 #include <headers/InterruptChoque.h>
 #include <headers/ToggleABSInterrupt.h>
 #include <headers/TaskBox.h>
+#include <headers/TaskChoque.h>
 
 
 #include <headers/globals.h>
@@ -17,6 +18,7 @@ TaskHandle_t handleAbs;
 TaskHandle_t handleLateral;
 TaskHandle_t handleLogger;
 TaskHandle_t handleBox;
+TaskHandle_t handleChoque;
 void setup()
 {
     // ## Pines ##
@@ -37,6 +39,12 @@ void setup()
     loadParameters();
 
     logQueue = xQueueCreate(20, sizeof(LogMessage));
+
+    semChoqueDetectado = xSemaphoreCreateBinary();
+    semABSToggle = xSemaphoreCreateBinary();
+
+    mutexLedRGB = xSemaphoreCreateMutex();
+
     // Configurar pines
     pinMode(pinAcelerador, INPUT);
     pinMode(pinFreno, INPUT);
@@ -45,9 +53,10 @@ void setup()
     pinMode(pinRojo, OUTPUT);
     pinMode(pinVerde, OUTPUT);
 
-    // Crear tareas  
+    // Crear tareas
     xTaskCreate(taskBox, "Box", 512, NULL, 1, &handleBox);
-    xTaskCreate(taskLogger, "Logger", 512, NULL, 1, &handleLogger);
+    xTaskCreate(taskLogger, "Logger", 768, NULL, 2, &handleLogger);
+    xTaskCreate(taskChoque, "Choque", 256, NULL, 3, &handleChoque);
     xTaskCreate(taskStatus, "Status", 256, NULL, 3, &handleStatus);
     xTaskCreate(taskABS, "ABS", 256, NULL, 2, &handleAbs);
     xTaskCreate(taskLateral, "Lateral", 256, NULL, 2, &handleLateral);
@@ -57,7 +66,8 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(pinToggleABS), interruptToggleABS, RISING);
 
 
-    if (logQueue == NULL)
+    if (logQueue == NULL || semChoqueDetectado == NULL ||
+        semABSToggle == NULL || mutexLedRGB == NULL)
     {
         Serial.println("Error al crear la cola de logs");
         while (1)

@@ -2,6 +2,11 @@
 #include <headers/globals.h>
 void interruptChoque()
 {
-    crashed = true;
-    Serial.println("¡Choque detectado!");
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    // Despertar tarea enviando señal por semáforo
+    xSemaphoreGiveFromISR(semChoqueDetectado, &xHigherPriorityTaskWoken);
+
+    // Forzar cambio de contexto si hay una tarea de mayor prioridad lista
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }

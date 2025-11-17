@@ -1,33 +1,42 @@
 #include <headers/TaskStatus.h>
 #include <headers/globals.h>
 
+void setLedColor(uint8_t rojo, uint8_t verde)
+{
+    // Tomar el mutex antes de acceder al LED RGB (recurso compartido)
+    if (xSemaphoreTake(mutexLedRGB, portMAX_DELAY) == pdTRUE)
+    {
+        analogWrite(pinRojo, rojo);
+        analogWrite(pinVerde, verde);
+
+        // Liberar el mutex después de usar el LED RGB
+        xSemaphoreGive(mutexLedRGB);
+    }
+}
+
 void yellowLed()
 {
-    analogWrite(pinRojo, 255);
-    analogWrite(pinVerde, 80);
+    setLedColor(255, 80);
 }
 
 void orangeLed()
 {
-    analogWrite(pinRojo, 255);
-    analogWrite(pinVerde, 20);
+    setLedColor(255, 20);
 }
 
 void greenLed()
 {
-    analogWrite(pinRojo, 0);
-    analogWrite(pinVerde, 255);
+    setLedColor(0, 255);
 }
 
 void redLed()
 {
-    analogWrite(pinRojo, 255);
-    analogWrite(pinVerde, 0);
+    setLedColor(255, 0);
 }
+
 void apagarLed()
 {
-    analogWrite(pinRojo, 0);
-    analogWrite(pinVerde, 0);
+    setLedColor(0, 0);
 }
 void taskStatus(void *parameter)
 {

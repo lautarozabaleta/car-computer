@@ -28,5 +28,17 @@ float absUpperThreshold = 0.0f;
 float absLowerThreshold = 0.0f;
 float effectiveBrakeForce = 0.0f;
 
+// Variables de estado del vehículo
+float currentSpeed = 0.0f;
+float appliedThrottlePercentage = 0.0f;
+float effectiveBrakePercentage = 0.0f;
+
 QueueHandle_t logQueue = NULL;
+
+// Semáforos binarios para eventos de interrupciones
+SemaphoreHandle_t semChoqueDetectado = NULL;
+SemaphoreHandle_t semABSToggle = NULL;
+
+// Mutex para exclusión mutua del LED RGB
+SemaphoreHandle_t mutexLedRGB = NULL;
 
