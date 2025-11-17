@@ -1,15 +1,13 @@
 #include <headers/TaskStatus.h>
 #include <headers/globals.h>
 
+// ============== FUNCIONES AUXILIARES ==============
 void setLedColor(uint8_t rojo, uint8_t verde)
 {
-    // Tomar el mutex antes de acceder al LED RGB (recurso compartido)
     if (xSemaphoreTake(mutexLedRGB, portMAX_DELAY) == pdTRUE)
     {
         analogWrite(pinRojo, rojo);
         analogWrite(pinVerde, verde);
-
-        // Liberar el mutex después de usar el LED RGB
         xSemaphoreGive(mutexLedRGB);
     }
 }
@@ -38,6 +36,8 @@ void apagarLed()
 {
     setLedColor(0, 0);
 }
+
+// ============== TAREA STATUS/LED ==============
 void taskStatus(void *parameter)
 {
     for (;;)

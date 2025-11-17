@@ -1,5 +1,7 @@
 #include "headers/InterruptChoque.h"
 #include <headers/globals.h>
+
+// ============== INTERRUPCIÓN ==============
 void interruptChoque()
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -8,5 +10,8 @@ void interruptChoque()
     xSemaphoreGiveFromISR(semChoqueDetectado, &xHigherPriorityTaskWoken);
 
     // Forzar cambio de contexto si hay una tarea de mayor prioridad lista
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken == pdTRUE)
+    {
+        portYIELD_FROM_ISR();
+    }
 }

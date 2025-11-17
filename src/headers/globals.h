@@ -47,10 +47,11 @@ extern SemaphoreHandle_t semABSToggle;
 // Mutex para exclusión mutua del LED RGB
 extern SemaphoreHandle_t mutexLedRGB;
 
-#define LOG_MESSAGE_SIZE 128
+#define LOG_MESSAGE_SIZE 60
 typedef struct
 {
     char message[LOG_MESSAGE_SIZE];
+    TickType_t tiempo;
 } LogMessage;
 
 #endif
