@@ -53,26 +53,26 @@ void setup()
     pinMode(pinRojo, OUTPUT);
     pinMode(pinVerde, OUTPUT);
 
+    // Verificar que los recursos se crearon correctamente
+    if (logQueue == NULL || semChoqueDetectado == NULL ||
+        semABSToggle == NULL || mutexLedRGB == NULL)
+    {
+        Serial.println(F("[ERROR] No se crearon recursos"));
+        while (1)
+            ;
+    }
+
     // Crear tareas
-    xTaskCreate(taskBox, "Box", 512, NULL, 1, &handleBox);
     xTaskCreate(taskLogger, "Logger", 768, NULL, 2, &handleLogger);
+    xTaskCreate(taskBox, "Box", 512, NULL, 1, &handleBox);
     xTaskCreate(taskChoque, "Choque", 256, NULL, 3, &handleChoque);
     xTaskCreate(taskStatus, "Status", 256, NULL, 3, &handleStatus);
     xTaskCreate(taskABS, "ABS", 256, NULL, 2, &handleAbs);
     xTaskCreate(taskLateral, "Lateral", 256, NULL, 2, &handleLateral);
 
-    //assignar interrupciones
+    // Configurar interrupciones (después de verificar recursos)
     attachInterrupt(digitalPinToInterrupt(pinSensorChoque), interruptChoque, RISING);
     attachInterrupt(digitalPinToInterrupt(pinToggleABS), interruptToggleABS, RISING);
-
-
-    if (logQueue == NULL || semChoqueDetectado == NULL ||
-        semABSToggle == NULL || mutexLedRGB == NULL)
-    {
-        Serial.println("Error al crear la cola de logs");
-        while (1)
-            ;
-    }
 
     // Iniciar el scheduler
     vTaskStartScheduler();

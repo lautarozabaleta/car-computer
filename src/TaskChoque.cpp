@@ -1,10 +1,10 @@
 #include "headers/TaskChoque.h"
 #include <headers/globals.h>
+#include <headers/TaskLogger.h>
 
+// ============== TAREA CHOQUE ==============
 void taskChoque(void *parameter)
 {
-    LogMessage msg;
-
     for (;;)
     {
         // Bloquearse esperando el semáforo del evento de choque
@@ -14,8 +14,7 @@ void taskChoque(void *parameter)
             crashed = true;
 
             // Enviar mensaje de log
-            snprintf(msg.message, sizeof(msg.message), "CHOQUE DETECTADO");
-            xQueueSend(logQueue, &msg, pdMS_TO_TICKS(100));
+            enviar_log("CHOQUE DETECTADO");
         }
     }
 }

@@ -1,5 +1,6 @@
 #include "headers/TaskLateral.h"
 #include <headers/globals.h>
+#include <headers/TaskLogger.h>
 
 const float dt = 0.01f; // Intervalo de tiempo en segundos
 float previousSpeed = 0.1f;
@@ -20,13 +21,12 @@ float calcSpeed()
 
 float calcLateralAcceleration(float speed, float steeringAngle)
 {
-
     return lateralConstant * speed * steeringAngle;
 }
+
+// ============== TAREA LATERAL ==============
 void taskLateral(void *parameter)
 {
-    LogMessage msg;
-
     for (;;)
     {
         float steeringAngle = analogRead(pinVolante);
@@ -36,17 +36,16 @@ void taskLateral(void *parameter)
             steeringAngle = -steeringAngle;
         float speed = calcSpeed();
         float lateralAcceleration = calcLateralAcceleration(speed, steeringAngle);
+
         if (lateralAcceleration > lateralAccelerationThreshold)
         {
-            snprintf(msg.message, sizeof(msg.message),
-                     "Alerta de riesgo lateral: %.2f m/s²", lateralAcceleration);
-            xQueueSend(logQueue, &msg, 0);
+            enviar_log("Alerta de riesgo lateral: %.2f m/s²", lateralAcceleration);
         }
+
         if (lateralAcceleration > lateralAccelerationThreshold * 1.5f)
         {
             crashed = true;
-            snprintf(msg.message, sizeof(msg.message), "COLISION LATERAL");
-            xQueueSend(logQueue, &msg, 0);
+            enviar_log("COLISION LATERAL");
         }
 
         vTaskDelay(pdMS_TO_TICKS(10));
